@@ -1,0 +1,69 @@
+---
+title: "Mid Course Project"
+output: html_notebook
+---
+
+```{r}
+installed.packages("readxl")
+```
+
+
+```{r}
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(scales)
+library(readxl)
+```
+
+```{r}
+enrollment_22_23 <- read_excel('Data/Enrollment_22_23.xlsx')
+enrollment_21_22 <- read_excel('Data/Enrollment_21_22.xlsx')
+enrollment_20_21 <- read_excel('Data/Enrollment_20_21.xlsx')
+enrollment_19_20 <- read_excel('Data/Enrollment_19_20.xlsx')
+```
+
+```{r}
+enrollment_22_23 %>%
+  group_by(`School Level`) %>%
+            count() 
+```
+```{r}
+enrollment_21_22 %>%
+  group_by(`School Level`) %>%
+            count() 
+```
+
+```{r}
+enrollment_20_21 %>%
+  group_by(`School Level`) %>%
+            count() 
+```
+```{r}
+enrollment_19_20 %>%
+  group_by(`School Level`) %>%
+            count() 
+```
+
+```{r}
+enrollment_22_23 <- enrollment_22_23 %>%
+  filter(`School Level` == "Charter" | `School Level` == "Elementary School" | `School Level` == "High School" | `School Level` == "Middle School")
+enrollment_22_23
+```
+```{r}
+enrollment_21_22 <- enrollment_21_22 %>%
+  filter(`School Level` == "Charter" | `School Level` == "Elementary School" | `School Level` == "High School" | `School Level` == "Middle School")
+enrollment_21_22
+```
+
+```{r}
+enrollment_20_21 <- enrollment_20_21 %>%
+  filter(`School Level` == "Charter" | `School Level` == "Elementary School" | `School Level` == "High School" | `School Level` == "Middle School")
+enrollment_20_21
+```
+
+```{r}
+enrollment_19_20 <- enrollment_19_20 %>%
+  filter(`School Level` == "Charter" | `School Level` == "Elementary School" | `School Level` == "High School" | `School Level` == "Middle School")
+enrollment_19_20
+```
