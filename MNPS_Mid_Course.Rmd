@@ -3,10 +3,6 @@ title: "Mid Course Project"
 output: html_notebook
 ---
 
-```{r}
-installed.packages("readxl")
-```
-
 
 ```{r}
 library(tidyverse)
@@ -21,6 +17,14 @@ enrollment_22_23 <- read_excel('Data/Enrollment_22_23.xlsx')
 enrollment_21_22 <- read_excel('Data/Enrollment_21_22.xlsx')
 enrollment_20_21 <- read_excel('Data/Enrollment_20_21.xlsx')
 enrollment_19_20 <- read_excel('Data/Enrollment_19_20.xlsx')
+enrollment<- read_csv('Data/enrollment.csv')
+school_map_data <- read_csv('Data/School_map_data.csv')
+school_map_data <- school_map_data[-c(168,169), ]
+```
+
+```{r}
+school_map <- st_as_sf(school_map_data, coords =c("LONG_","LAT_"), crs = 4326)
+school_map
 ```
 
 ```{r}
@@ -28,6 +32,7 @@ enrollment_22_23 %>%
   group_by(`School Level`) %>%
             count() 
 ```
+
 ```{r}
 enrollment_21_22 %>%
   group_by(`School Level`) %>%
@@ -62,8 +67,110 @@ enrollment_20_21 <- enrollment_20_21 %>%
 enrollment_20_21
 ```
 
+
+
 ```{r}
-enrollment_19_20 <- enrollment_19_20 %>%
-  filter(`School Level` == "Charter" | `School Level` == "Elementary School" | `School Level` == "High School" | `School Level` == "Middle School")
-enrollment_19_20
+enrollment %>% 
+  filter(sl == "Charter") %>%
+  ggplot(aes(x = years, y = enrollment))+
+  geom_col()
+
 ```
+```{r}
+enrollment %>% 
+  filter(sl == "Elementary School") %>%
+  ggplot(aes(x = years, y = enrollment))+
+  geom_col()
+
+```
+```{r}
+enrollment %>% 
+  filter(sl == "Middle School") %>%
+  ggplot(aes(x = years, y = enrollment))+
+  geom_col()
+```
+
+```{r}
+enrollment %>% 
+  filter(sl == "High School") %>%
+  ggplot(aes(x = years, y = enrollment))+
+  geom_col()
+```
+
+```{r}
+MNPS <- st_read("gisMNPS_Schools_2122/gisMNPS_BoE.shp", as_tibble = T, quiet = T)%>%
+  st_transform('+proj=longlat +datum=WGS84')
+ggplot(MNPS) +
+  geom_sf()
+MNPS
+```
+
+```{r}
+school_map_data %>%
+  leaflet() %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addCircleMarkers(color ="grey", opacity=1, weight = 1,
+                highlightOptions = highlightOptions(
+                weight = 5,
+                fillOpacity = 0.7,
+                bringToFront = FALSE)%>%
+               # label=MNPS$geometry) %>%
+  setView(lng = -86.7816, lat = 36.1627, zoom = 10) %>%
+  setMaxBounds(lng1 = -86.7816 + 1,
+               lat1 = 36.1627 + 1,
+               lng2 = -86.7816 - 1,
+               lat2 = 36.1627 - 1) %>%
+addPolygons(fillColor = "green",
+                   weight = 5,
+                   fillOpacity = 0.75)
+
+```
+
+```{r}
+map <- leaflet(options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
+  setMaxBounds(lng1 = -86.7816 + 1, 
+               lat1 = 36.1627 + 1, 
+               lng2 = -86.7816 - 1, 
+               lat2 = 36.1627 - 1) %>%
+  addCircleMarkers(data = school_map,
+                   radius = 3,
+                   color = "white",
+                   weight = 0.25,
+                   fillColor = "red",
+                   fillOpacity = 0.75) %>%
+addPolygons(data = MNPS,
+                   weight = 2,
+                   fillOpacity = 0.0)
+map
+```
+
+```{r}
+enrollment %>%
+  group_by (years) %>%
+  filter(sl == "Elementary School") %>%
+  ggplot(aes(x= years, y = enrollment, fill = years)) +
+  geom_col()
+  
+```
+
+```{r}
+enrollment %>%
+  group_by (years) %>%
+  filter(sl == "Elementary School") %>%
+  ggplot(aes(x= years, y = enrollment, fill = years)) +
+  geom_boxplot()
+```
+
+
+```{r}
+enrollment %>% 
+  group_by (years) %>%
+  ggplot(aes(years, enrollment)) +
+  geom_bar(stat='identity', na.rm = TRUE) + 
+  geom_col(position = 'dodge') +
+  labs(y = 'Total Enrollment', x = 'years',   
+  title = 'Total Enrollment By Years') +
+```
+
