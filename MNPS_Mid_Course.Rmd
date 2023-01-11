@@ -10,6 +10,8 @@ library(sf)
 library(leaflet)
 library(scales)
 library(readxl)
+library(htmltools)
+library(scales)
 ```
 
 ```{r}
@@ -105,26 +107,7 @@ ggplot(MNPS) +
 MNPS
 ```
 
-```{r}
-school_map_data %>%
-  leaflet() %>%
-  addProviderTiles(provider = "CartoDB.Positron") %>%
-  addCircleMarkers(color ="grey", opacity=1, weight = 1,
-                highlightOptions = highlightOptions(
-                weight = 5,
-                fillOpacity = 0.7,
-                bringToFront = FALSE)%>%
-               # label=MNPS$geometry) %>%
-  setView(lng = -86.7816, lat = 36.1627, zoom = 10) %>%
-  setMaxBounds(lng1 = -86.7816 + 1,
-               lat1 = 36.1627 + 1,
-               lng2 = -86.7816 - 1,
-               lat2 = 36.1627 - 1) %>%
-addPolygons(fillColor = "green",
-                   weight = 5,
-                   fillOpacity = 0.75)
 
-```
 
 ```{r}
 map <- leaflet(options = leafletOptions(minZoom = 10)) %>%
@@ -152,25 +135,148 @@ enrollment %>%
   filter(sl == "Elementary School") %>%
   ggplot(aes(x= years, y = enrollment, fill = years)) +
   geom_col()
-  
 ```
 
 ```{r}
 enrollment %>%
   group_by (years) %>%
   filter(sl == "Elementary School") %>%
-  ggplot(aes(x= years, y = enrollment, fill = years)) +
-  geom_boxplot()
+ ggplot(aes(x= years, y = enrollment, fill = years)) +
+geom_boxplot()
+```
+
+```{r}
+elementary <- enrollment %>%
+  group_by (years) %>%
+  filter(sl == "Elementary School") %>%
+  summarise (Elementary = sum(enrollment)) 
 ```
 
 
 ```{r}
-enrollment %>% 
+middle <- enrollment %>%
   group_by (years) %>%
-  ggplot(aes(years, enrollment)) +
-  geom_bar(stat='identity', na.rm = TRUE) + 
-  geom_col(position = 'dodge') +
-  labs(y = 'Total Enrollment', x = 'years',   
-  title = 'Total Enrollment By Years') +
+  filter(sl == "Middle School") %>%
+  summarise (Middle = sum(enrollment)) 
+```
+
+```{r}
+high <- enrollment %>%
+  group_by (years) %>%
+  filter(sl == "High School") %>%
+  summarise (High = sum(enrollment)) 
+```
+
+
+```{r}
+charter <- enrollment %>%
+  group_by (years) %>%
+  filter(sl == "Charter") %>%
+  summarise (Charter = sum(enrollment)) 
+```
+
+
+```{r}
+enrollment_trends <- left_join(elementary, middle, by = "years") 
+enrollment_trends <- left_join(enrollment_trends, high, by = "years")
+enrollment_trends <- left_join(enrollment_trends, charter, by = "years")
+enrollment_trends
+
+```
+```{r}
+enrollment %>%
+  group_by (years, sl) %>%
+  summarise(enrollment = sum(enrollment)) %>%
+  ungroup() %>%
+  ggplot(aes(x = years, y= enrollment, group = sl, color = sl))+
+  geom_line()+
+  geom_point()
+
+```
+
+
+```{r}
+
+#tiff("enrollemnt.tiff", units="in", width=10, height=6, res=300)
+ggplot(data = enrollment_trends)+
+  geom_line(aes(x= years, y = Elementary, group = 1), color = "blue") +
+  geom_point(aes( x= years, y = Elementary, group = 1), color="blue",size=1.0)+
+  geom_line(aes( x= years, y = Middle, group = 2), color = "green")+
+  geom_point(aes( x= years, y = Middle, group = 2), color = "green", size = 1.0)+
+  geom_line(aes( x= years, y = High, group = 3), color = "red")+
+  geom_point(aes( x= years, y = High, group = 3), color = "red", size = 1.0)+
+  geom_line(aes( x= years, y = Charter, group = 4), color = "purple")+
+  geom_point(aes( x= years, y = Charter, group = 4), color = "purple", size = 1.0)+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+        plot.title = element_text(hjust = 0.5),
+        legend.position="bottom", 
+        axis.title.y = element_text(size=12, vjust = 3),
+        axis.text.y  = element_text(size = 10))+
+  ggtitle("Enrollment trends over the years")
+  
+```
+
+
+
+```{r}
+
+census <- st_read("tl_2022_47_tract 2/tl_2022_47_tract.shp", as_tibble = T, quiet = T) %>%
+  st_transform('+proj=longlat +datum=WGS84')
+ggplot(census) +
+  geom_sf()
+census
+
+```
+
+```{r}
+map <- leaflet(options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
+  setMaxBounds(lng1 = -86.7816 + 1, 
+               lat1 = 36.1627 + 1, 
+               lng2 = -86.7816 - 1, 
+               lat2 = 36.1627 - 1) %>%
+  addCircleMarkers(data = school_map,
+                   radius = 3,
+                   color = "white",
+                   weight = 0.25,
+                   fillColor = "red",
+                   fillOpacity = 0.75) %>%
+addPolygons(data = census,
+                   weight = 1,
+                   fillOpacity = 0.0) %>%
+  addPolygons(data = MNPS,
+              color = "green",
+                   weight = 3,
+                   fillOpacity = 0.0)
+
+map
+```
+
+```{r}
+enrollment$label <- 
+  paste0("<b>School:</b> ", enrollment$school, "<br>",
+         "<b>sl:</b> ", enrollment$sl, "<br>", 
+         "<b>enrollment:</b> ", enrollment$enrollment) %>%
+  lapply(htmltools::HTML)
+```
+
+```{r}
+map <- leaflet(options = leafletOptions(minZoom = 10)) %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
+  setMaxBounds(lng1 = -86.7816 + 1, 
+               lat1 = 36.1627 + 1, 
+               lng2 = -86.7816 - 1, 
+               lat2 = 36.1627 - 1) %>%
+  addCircleMarkers(data = school_map,
+                   radius = 1,
+                   color = "white",
+                   weight = 0.25,
+                   fillColor = "red",
+                   fillOpacity = 0.75,
+                   label = ~label)
+
+map
 ```
 
