@@ -10,12 +10,19 @@
 # Define UI for application that draws a histogram
 
 dashboardPage(
-  dashboardHeader(title = "MNPS School Enrollment"),
-  dashboardSidebar(),
+  dashboardHeader(title = "MNPS School Enrollment",
+                  titleWidth = "400px"),
+  dashboardSidebar( 
+                     selectInput("School_level", 
+                                 "Choose School level:",
+                                 choices = c ("All", "Elementary", "Middle", "High", "Charter")) 
+                    ), 
+
   dashboardBody(
     fluidRow(
       box(plotOutput("plot1")),
     )
   )
-  )
+)
+  
 
