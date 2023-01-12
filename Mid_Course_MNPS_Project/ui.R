@@ -13,14 +13,18 @@ dashboardPage(
   dashboardHeader(title = "MNPS School Enrollment",
                   titleWidth = "400px"),
   dashboardSidebar( 
-                     selectInput("School_level", 
-                                 "Choose School level:",
-                                 choices = c ("All", "Elementary", "Middle", "High", "Charter")) 
+                     selectInput("SCHOOL_TYPE", 
+                                 "Choose School type:",
+                                 choices = c ("All", "Elementary School", "Middle School", "High School", "Charter")),
+                    mainPanel(plotOutput("plot1"))
+                     # selectInput("Years", 
+                     #             "Choose Year of Enrollment:",
+                     #             choices = c ("All", "2007-2008", "2008-2009", "2009-20010")),
                     ), 
 
-  dashboardBody(
-    fluidRow(
-      box(plotOutput("plot1")),
+   dashboardBody(
+   fluidRow(
+  box(plotOutput("plot1")),
     )
   )
 )
