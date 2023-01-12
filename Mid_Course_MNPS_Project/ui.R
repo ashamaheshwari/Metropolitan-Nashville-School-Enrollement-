@@ -8,25 +8,56 @@
 #
 
 # Define UI for application that draws a histogram
+library(shiny)
 
-dashboardPage(
-  dashboardHeader(title = "MNPS School Enrollment",
-                  titleWidth = "400px"),
-  dashboardSidebar( 
-                     selectInput("SCHOOL_TYPE", 
-                                 "Choose School type:",
-                                 choices = c ("All", "Elementary School", "Middle School", "High School", "Charter")),
-                    mainPanel(plotOutput("plot1"))
-                     # selectInput("Years", 
-                     #             "Choose Year of Enrollment:",
-                     #             choices = c ("All", "2007-2008", "2008-2009", "2009-20010")),
-                    ), 
 
-   dashboardBody(
-   fluidRow(
-  box(plotOutput("plot1")),
-    )
-  )
+shinyUI(fluidPage(theme = shinytheme("united"),
+                  navbarPage("School Enrollemnt",
+                             tabPanel("Tabname",
+                                      sidebarPanel(
+                                        checkboxGroupInput("SCHOOL_TYPE", 
+                                                           label = h3("Select School level"), 
+                                                           choices = unique (school_enrollment$SCHOOL_TYPE)),
+                                        
+                                        checkboxGroupInput("YEARS", 
+                                                           label = h3("Select Years"), 
+                                                           choices = unique (school_enrollment$YEARS)), 
+                                      ),#sidbarpanel
+                                      mainPanel(plotOutput("line_plot")),
+                                               # leafletOutput("mymap")) #mainpanel
+                             )))
 )
-  
 
+
+
+# shinyUI(fluidPage(theme = shinytheme("united"),
+#   titlePanel("MNPS School Enrollment",
+#                   ),
+#   sidebarLayout(
+#     sidebarPanel (
+#       selectInput("SCHOOL_TYPE", 
+#                   "Choose School type:",
+#                   choices = unique (school_enrollment$SCHOOL_TYPE),
+#                   selected = "All"),
+#       
+#       # dateRangeInput("YEARS", strong("Year Range"), start = "07-08", end = "22-23",
+#       #                min = "07-08", max = "22-23")
+#       # ),
+#     mainPanel(plotOutput("line_plot", height = "300px"))
+#     )
+#   )
+#   )
+#   # tabPanel( "Enrollment", 
+#   #                    selectInput("SCHOOL_TYPE", 
+#   #                                "Choose School type:",
+#   #                                choices = c ("All", "Elementary School", "Middle School", "High School", "Charter")),
+#   #                   mainPanel(plotOutput("plot1"))
+#   #                    # selectInput("Years", 
+#   #                    #             "Choose Year of Enrollment:",
+#   #                    #             choices = c ("All", "2007-2008", "2008-2009", "2009-20010")),
+#   #                   )
+#     )
+# 
+# 
+#   
+# 
