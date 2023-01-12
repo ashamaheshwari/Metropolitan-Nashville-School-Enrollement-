@@ -23,11 +23,13 @@ shinyServer(function(input, output, session) {
 #  #   ))
 #  #  })
 # 
+  filtered <- reactive({})
+    
  output$line_plot <- renderPlot ({ 
    school_enrollment %>%
      group_by (YEARS, SCHOOL_TYPE) %>%
-     filter (YEARS == input$YEARS) %>%
-     filter(SCHOOL_TYPE == input$SCHOOL_TYPE) %>%
+    # filter (YEARS == input$checkGroupr) %>%
+     filter(SCHOOL_TYPE == input$checkGroupo) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
@@ -40,5 +42,4 @@ shinyServer(function(input, output, session) {
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
  })
- 
  })

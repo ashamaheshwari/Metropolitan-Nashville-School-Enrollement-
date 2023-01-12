@@ -12,16 +12,16 @@ library(shiny)
 
 
 shinyUI(fluidPage(theme = shinytheme("united"),
-                  navbarPage("School Enrollemnt",
+                  navbarPage("School Enrollment",
                              tabPanel("Tabname",
                                       sidebarPanel(
-                                        checkboxGroupInput("SCHOOL_TYPE", 
+                                        checkboxGroupInput("checkGroupo", 
                                                            label = h3("Select School level"), 
                                                            choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         
-                                        checkboxGroupInput("YEARS", 
-                                                           label = h3("Select Years"), 
-                                                           choices = unique (school_enrollment$YEARS)), 
+                                        # checkboxGroupInput("checkGroupr", 
+                                        #                    label = h3("Select Years"), 
+                                        #                    choices = unique (school_enrollment$YEARS)), 
                                       ),#sidbarpanel
                                       mainPanel(plotOutput("line_plot")),
                                                # leafletOutput("mymap")) #mainpanel
