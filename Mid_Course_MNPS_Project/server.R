@@ -23,13 +23,17 @@ shinyServer(function(input, output, session) {
 #  #   ))
 #  #  })
 # 
-  filtered <- reactive({})
     
+# enrollment_filtered <- reactive ({
+#     E <- school_enrollment %>% group_by (YEARS, SCHOOL_TYPE) %>%
+#      filter(SCHOOL_TYPE == input$Years)
+#    return(E)
+#  })
+
  output$line_plot <- renderPlot ({ 
    school_enrollment %>%
      group_by (YEARS, SCHOOL_TYPE) %>%
-    # filter (YEARS == input$checkGroupr) %>%
-     filter(SCHOOL_TYPE == input$checkGroupo) %>%
+     filter(SCHOOL_TYPE == input$School_Level) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
@@ -42,4 +46,21 @@ shinyServer(function(input, output, session) {
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
  })
+ 
+ output$mymap <- renderLeaflet({
+   leaflet(options = leafletOptions(minZoom = 10)) %>%
+     addProviderTiles(provider = "CartoDB.Positron") %>%
+     setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
+     setMaxBounds(lng1 = -86.7816 + 1, 
+                  lat1 = 36.1627 + 1, 
+                  lng2 = -86.7816 - 1, 
+                  lat2 = 36.1627 - 1) %>%
+     addCircleMarkers(data = school_enrollment,
+                      radius = 3,
+                      color = "white",
+                      weight = 0.25,
+                      fillColor = "red",
+                      fillOpacity = 0.75) 
+ })
+ 
  })

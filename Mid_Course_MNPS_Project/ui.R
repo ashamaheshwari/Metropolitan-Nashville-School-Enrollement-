@@ -13,51 +13,46 @@ library(shiny)
 
 shinyUI(fluidPage(theme = shinytheme("united"),
                   navbarPage("School Enrollment",
-                             tabPanel("Tabname",
+                             tabPanel("Enrollment",
                                       sidebarPanel(
-                                        checkboxGroupInput("checkGroupo", 
+                                        checkboxGroupInput("School_Level", 
                                                            label = h3("Select School level"), 
                                                            choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         
-                                        # checkboxGroupInput("checkGroupr", 
+                                        # dateRangeInput("YEARS", strong("Year Range"), start = "07-08", end = "22-23",
+                                        #                 min = "07-08", max = "22-23")),
+                                        # checkboxGroupInput("Years", 
                                         #                    label = h3("Select Years"), 
                                         #                    choices = unique (school_enrollment$YEARS)), 
                                       ),#sidbarpanel
                                       mainPanel(plotOutput("line_plot")),
-                                               # leafletOutput("mymap")) #mainpanel
-                             )))
-)
+                             ),
+                                      tabPanel("MNPS Map", 
+                                               sidebarPanel(
+                                                 selectInput("District", "Select School District",
+                                                             choices = list("ALL",
+                                                                            "District 1",
+                                                                            "District 2",
+                                                                            "District 3",
+                                                                            "District 4",
+                                                                            "District 5",
+                                                                            "District 6",
+                                                                            "District 7",
+                                                                            "District 8",
+                                                                            "District 9")),
+                                                 selectInput("School", "Select School",
+                                                             choices = unique(school_enrollment_sf$SCHOOL_NAME))
+                                            
+                                                ),
+                                                 mainPanel(leafletOutput("mymap")) #mainpanel
+                                                 )
+                                               )
+                                      
+                                           )
+                                      )
+        
+        
 
 
 
-# shinyUI(fluidPage(theme = shinytheme("united"),
-#   titlePanel("MNPS School Enrollment",
-#                   ),
-#   sidebarLayout(
-#     sidebarPanel (
-#       selectInput("SCHOOL_TYPE", 
-#                   "Choose School type:",
-#                   choices = unique (school_enrollment$SCHOOL_TYPE),
-#                   selected = "All"),
-#       
-#       # dateRangeInput("YEARS", strong("Year Range"), start = "07-08", end = "22-23",
-#       #                min = "07-08", max = "22-23")
-#       # ),
-#     mainPanel(plotOutput("line_plot", height = "300px"))
-#     )
-#   )
-#   )
-#   # tabPanel( "Enrollment", 
-#   #                    selectInput("SCHOOL_TYPE", 
-#   #                                "Choose School type:",
-#   #                                choices = c ("All", "Elementary School", "Middle School", "High School", "Charter")),
-#   #                   mainPanel(plotOutput("plot1"))
-#   #                    # selectInput("Years", 
-#   #                    #             "Choose Year of Enrollment:",
-#   #                    #             choices = c ("All", "2007-2008", "2008-2009", "2009-20010")),
-#   #                   )
-#     )
-# 
-# 
-#   
-# 
+
