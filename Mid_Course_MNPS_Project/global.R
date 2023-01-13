@@ -1,5 +1,5 @@
 
-
+library(htmltools)
 library(shiny)
 library(shinythemes)
 library(shinydashboard)
@@ -19,3 +19,12 @@ school_enrollment_sf <- st_as_sf(school_enrollment, coords =c("LONGITUDE","LATIT
 
 MNPS <- st_read("GISMNPS_SCHOOLS_2122/gisMNPS_BoE.shp", as_tibble = T, quiet = T)%>%
 st_transform('+proj=longlat +datum=WGS84')
+
+school_enrollment_sf$popup <- 
+  paste0("<b>School Name:</b> ", school_enrollment_sf$SCHOOL_NAME, "<br>",
+         "<b>School Type:</b> ", school_enrollment_sf$SCHOOL_TYPE, "<br>",
+         "<b>District:</b> ", school_enrollment_sf$METRO_DIST, "<br>" , 
+         "<b>Cluster:</b> ", school_enrollment_sf$CLUSTER_NAME, "<br>",
+         "<b>Street Address:</b> ", school_enrollment_sf$ADDRESS, "<br>",
+         "<b>Phone:</b> ", school_enrollment_sf$PHONE, "<br>") %>%
+  lapply(htmltools::HTML)

@@ -47,7 +47,18 @@ shinyServer(function(input, output, session) {
      ggtitle("Enrollment trends over the years")
  })
  
+ 
  output$mymap <- renderLeaflet({
+   
+   # school_enrollment_sf$popup <- 
+   #   paste0("<b>School Name:</b> ", school_enrollment_sf$SCHOOL_NAME, "<br>",
+   #          "<b>School Type:</b> ", school_enrollment_sf$SCHOOL_TYPE, "<br>",
+   #          "<b>District:</b> ", school_enrollment_sf$METRO_DIST, "<br>" , 
+   #          "<b>Cluster:</b> ", school_enrollment_sf$CLUSTER_NAME, "<br>",
+   #          "<b>Street Address:</b> ", school_enrollment_sf$ADDRESS, "<br>",
+   #          "<b>Phone:</b> ", school_enrollment_sf$PHONE, "<br>") %>%
+   #          lapply(htmltools::HTML)
+   # 
    leaflet(options = leafletOptions(minZoom = 10)) %>%
      addProviderTiles(provider = "CartoDB.Positron") %>%
      setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
@@ -55,12 +66,13 @@ shinyServer(function(input, output, session) {
                   lat1 = 36.1627 + 1, 
                   lng2 = -86.7816 - 1, 
                   lat2 = 36.1627 - 1) %>%
-     addCircleMarkers(data = school_enrollment,
+     addCircleMarkers(data = school_enrollment_sf,
                       radius = 3,
                       color = "white",
                       weight = 0.25,
                       fillColor = "red",
-                      fillOpacity = 0.75) %>%
+                      fillOpacity = 0.75,
+                      label = popup) %>%
    addPolygons(data = MNPS,
                weight = 2,
                fillOpacity = 0.0)
