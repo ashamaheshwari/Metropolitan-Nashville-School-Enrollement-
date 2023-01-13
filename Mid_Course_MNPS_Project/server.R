@@ -66,16 +66,16 @@ shinyServer(function(input, output, session) {
                   lat1 = 36.1627 + 1, 
                   lng2 = -86.7816 - 1, 
                   lat2 = 36.1627 - 1) %>%
+     addPolygons(data = MNPS,
+                 weight = 2,
+                 fillOpacity = 0.0) %>%
      addCircleMarkers(data = school_enrollment_sf,
                       radius = 3,
                       color = "white",
                       weight = 0.25,
                       fillColor = "red",
                       fillOpacity = 0.75,
-                      label = popup) %>%
-   addPolygons(data = MNPS,
-               weight = 2,
-               fillOpacity = 0.0)
+                      label = ~popup)
  })
  
  output$bar_plot <- renderPlot ({ 
