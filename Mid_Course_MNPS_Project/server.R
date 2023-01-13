@@ -33,7 +33,7 @@ shinyServer(function(input, output, session) {
  output$line_plot <- renderPlot ({ 
    school_enrollment %>%
      group_by (YEARS, SCHOOL_TYPE) %>%
-     filter(SCHOOL_TYPE == input$School_Level) %>%
+     filter(SCHOOL_TYPE == input$school_level) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
@@ -60,7 +60,36 @@ shinyServer(function(input, output, session) {
                       color = "white",
                       weight = 0.25,
                       fillColor = "red",
-                      fillOpacity = 0.75) 
+                      fillOpacity = 0.75) %>%
+   addPolygons(data = MNPS,
+               weight = 2,
+               fillOpacity = 0.0)
  })
  
+ output$bar_plot <- renderPlot ({ 
+   school_enrollment %>%
+     filter(SCHOOL_TYPE == input$School_Level) %>%
+     filter(SCHOOL_NAME == input$School) %>%
+     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT), fill = YEARS)+
+     geom_col(stat="identity")+
+     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+           plot.title = element_text(hjust = 0.5),
+           legend.position="right", 
+           axis.title.y = element_text(size=12, vjust = 3),
+           axis.text.y  = element_text(size = 10))+
+     ggtitle("Enrollment trends over the years")
+   
  })
+ 
+output$School_Select <- renderUI({
+   choices <- school_enrollment %>%
+             filter(SCHOOL_TYPE == input$School_Level) %>% 
+             pull(SCHOOL_NAME) %>%
+             unique() %>%
+             sort()
+   
+  selectInput("School", "Select School",
+               choices = choices)
+})
+  
+})

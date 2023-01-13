@@ -15,7 +15,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                   navbarPage("School Enrollment",
                              tabPanel("Enrollment",
                                       sidebarPanel(
-                                        checkboxGroupInput("School_Level", 
+                                        checkboxGroupInput("school_level", 
                                                            label = h3("Select School level"), 
                                                            choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         
@@ -29,28 +29,21 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                              ),
                                       tabPanel("MNPS Map", 
                                                sidebarPanel(
-                                                 selectInput("District", "Select School District",
-                                                             choices = list("ALL",
-                                                                            "District 1",
-                                                                            "District 2",
-                                                                            "District 3",
-                                                                            "District 4",
-                                                                            "District 5",
-                                                                            "District 6",
-                                                                            "District 7",
-                                                                            "District 8",
-                                                                            "District 9")),
-                                                 selectInput("School", "Select School",
-                                                             choices = unique(school_enrollment_sf$SCHOOL_NAME))
+                                                 selectInput("School_Level", "Select School level",
+                                                             choices = unique (school_enrollment$SCHOOL_TYPE)),
+                                                uiOutput("School_Select")
+                                                  #selectInput("School", "Select School",
+                                                    #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
                                             
                                                 ),
-                                                 mainPanel(leafletOutput("mymap")) #mainpanel
+                                                 mainPanel(leafletOutput("mymap"), 
+                                                          plotOutput(("bar_plot"), width = "50%"))  #mainpanel
                                                  )
                                                )
                                       
                                            )
                                       )
-        
+
         
 
 

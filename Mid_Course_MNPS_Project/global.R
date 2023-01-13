@@ -1,4 +1,5 @@
 
+
 library(shiny)
 library(shinythemes)
 library(shinydashboard)
@@ -16,5 +17,5 @@ school_enrollment$LATITUDE[(is.na(school_enrollment$LATITUDE))] <-
 
 school_enrollment_sf <- st_as_sf(school_enrollment, coords =c("LONGITUDE","LATITUDE"), crs = 4326)
 
-# MNPS <- st_read("Data/gisMNPS_BoE.shp", as_tibble = T, quiet = T)%>%
-#   st_transform('+proj=longlat +datum=WGS84')
+MNPS <- st_read("GISMNPS_SCHOOLS_2122/gisMNPS_BoE.shp", as_tibble = T, quiet = T)%>%
+st_transform('+proj=longlat +datum=WGS84')
