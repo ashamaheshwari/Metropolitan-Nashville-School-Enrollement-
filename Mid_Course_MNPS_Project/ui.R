@@ -17,10 +17,10 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                       sidebarPanel(
                                         checkboxGroupInput("school_level", 
                                                            label = h3("Select School level"), 
-                                                           choices = unique (school_enrollment$SCHOOL_TYPE)),
-                                        
-                                        # dateRangeInput("YEARS", strong("Year Range"), start = "07-08", end = "22-23",
-                                        #                 min = "07-08", max = "22-23")),
+                                                           choices = c(unique (school_enrollment$SCHOOL_TYPE)
+                                                                       
+                                                    )),
+    
                                          checkboxGroupInput("Years", 
                                                            label = h3("Select Years"), 
                                                           choices = unique (school_enrollment$YEARS)), 
