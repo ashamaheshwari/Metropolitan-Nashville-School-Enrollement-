@@ -23,8 +23,9 @@ st_transform('+proj=longlat +datum=WGS84')
 school_enrollment_sf$popup <- 
   paste0("<b>School Name:</b> ", school_enrollment_sf$SCHOOL_NAME, "<br>",
          "<b>School Type:</b> ", school_enrollment_sf$SCHOOL_TYPE, "<br>",
-         "<b>District:</b> ", school_enrollment_sf$METRO_DIST, "<br>" , 
+         "<b>District:</b> ", school_enrollment_sf$SCHBRD_DIST, "<br>" , 
          "<b>Cluster:</b> ", school_enrollment_sf$CLUSTER_NAME, "<br>",
          "<b>Street Address:</b> ", school_enrollment_sf$ADDRESS, "<br>",
-         "<b>Phone:</b> ", school_enrollment_sf$PHONE, "<br>") %>%
+         "<b>Phone:</b> ", school_enrollment_sf$PHONE, "<br>",
+         "<b>Web Link:</b> ", school_enrollment_sf$WEB_LINK, "<br>")  %>%
   lapply(htmltools::HTML)

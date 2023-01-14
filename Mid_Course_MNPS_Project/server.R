@@ -50,15 +50,7 @@ shinyServer(function(input, output, session) {
  
  output$mymap <- renderLeaflet({
    
-   # school_enrollment_sf$popup <- 
-   #   paste0("<b>School Name:</b> ", school_enrollment_sf$SCHOOL_NAME, "<br>",
-   #          "<b>School Type:</b> ", school_enrollment_sf$SCHOOL_TYPE, "<br>",
-   #          "<b>District:</b> ", school_enrollment_sf$METRO_DIST, "<br>" , 
-   #          "<b>Cluster:</b> ", school_enrollment_sf$CLUSTER_NAME, "<br>",
-   #          "<b>Street Address:</b> ", school_enrollment_sf$ADDRESS, "<br>",
-   #          "<b>Phone:</b> ", school_enrollment_sf$PHONE, "<br>") %>%
-   #          lapply(htmltools::HTML)
-   # 
+    
    leaflet(options = leafletOptions(minZoom = 10)) %>%
      addProviderTiles(provider = "CartoDB.Positron") %>%
      setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
@@ -82,7 +74,7 @@ shinyServer(function(input, output, session) {
    school_enrollment %>%
      filter(SCHOOL_TYPE == input$School_Level) %>%
      filter(SCHOOL_NAME == input$School) %>%
-     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT), fill = YEARS)+
+     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT, fill = YEARS))+
      geom_col(stat="identity")+
      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
            plot.title = element_text(hjust = 0.5),

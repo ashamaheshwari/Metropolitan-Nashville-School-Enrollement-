@@ -36,8 +36,9 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                     #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
                                           
                                                 ),
-                                                 mainPanel(leafletOutput("mymap"), 
-                                                          plotOutput(("bar_plot"), width = "50%"))  #mainpanel
+                                                 mainPanel(
+                                                          plotOutput(("bar_plot"), width = "50%"),
+                                                          leafletOutput("mymap"),)  #mainpanel
                                                  )
                                                )
                                       
