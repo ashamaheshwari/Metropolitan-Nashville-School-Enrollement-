@@ -21,6 +21,22 @@ school_map_data <- school_map_data[-c(168,169), ]
 school_enrollment <-read_csv('Data/school_enrollment.csv')
 ```
 
+
+```{r}
+enrollment_22_23 <- read_excel('Data/Enrollment_22_23.xlsx')
+enrollment_21_22 <- read_excel('Data/Enrollment_21_22.xlsx')
+enrollment_20_21 <- read_excel('Data/Enrollment_20_21.xlsx')
+enrollment_19_20 <- read_excel('Data/Enrollment_19_20.xlsx')
+```
+
+```{r}
+enrollment_22_23 <- subset(enrollment_22_23, select = -c(3, 5, 6, 34))
+enrollment_21_22 <- subset(enrollment_21_22, select = -c(3, 5, 6, 34))
+enrollment_20_21 <- subset(enrollment_20_21, select = -c(3, 5, 6, 34))
+enrollment_19_20 <- subset(enrollment_19_20, select = -c(3, 5, 6, 34))
+```
+
+
 ```{r}
 school_map <- st_as_sf(school_map_data, coords =c("LONG_","LAT_"), crs = 4326)
 school_map
