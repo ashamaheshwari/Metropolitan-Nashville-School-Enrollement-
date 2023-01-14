@@ -30,16 +30,16 @@ shinyServer(function(input, output, session) {
 #    return(E)
 #  })
 
-#observe({
+#output$range <-renderPrint({input$Years})
   
- output$line_plot <- renderPlot ({ 
+output$line_plot <- renderPlot ({ 
    
- #  plot <- 
+
      school_enrollment %>%
-     #{if (input$school_level == 'All') . else filter(., SCHOOL_TYPE == input$school_level)} %>%
-     #group_by (YEARS, SCHOOL_TYPE) %>%
-     group_by (YEARS, SCHOOL_TYPE) %>%
+     group_by (YEARS_1, YEARS, SCHOOL_TYPE) %>%
      filter(SCHOOL_TYPE %in% input$school_level) %>%
+     #filter(YEARS_1 %in% input$Years) %>%
+     filter((YEARS_1 >= input$Years[1]) & (YEARS_1 < input$Years[2])) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
@@ -51,8 +51,9 @@ shinyServer(function(input, output, session) {
            axis.title.y = element_text(size=12, vjust = 3),
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
-         })
-       # })
+         
+     })
+       
  
  output$mymap <- renderLeaflet({
    

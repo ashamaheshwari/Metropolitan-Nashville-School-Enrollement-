@@ -19,34 +19,37 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                            label = h3("Select School level"), 
                                                            choices = c(unique (school_enrollment$SCHOOL_TYPE)
                                                                        
-                                                    )),
-    
-                                         checkboxGroupInput("Years", 
-                                                           label = h3("Select Years"), 
-                                                          choices = unique (school_enrollment$YEARS)), 
+                                                           )),
+                                       
+                                        sliderInput("Years", 
+                                                    "Select Range of Years:",
+                                                    min = 2007, 
+                                                    max = 2023,
+                                                    value = c (2008, 2017),
+                                                    sep = ""
+                                                    ), 
+                                                  
+                                        
+                                        # checkboxGroupInput("Years", 
+                                        #                    label = h3("Select Years"), 
+                                        #                    choices = unique (school_enrollment$YEARS)), 
                                       ),#sidbarpanel
                                       mainPanel(plotOutput("line_plot")),
                              ),
-                                      tabPanel("MNPS Map", 
-                                               sidebarPanel(
-                                                 selectInput("School_Level", "Select School level",
-                                                             choices = unique (school_enrollment$SCHOOL_TYPE)),
-                                                uiOutput("School_Select"),
-                                                  #selectInput("School", "Select School",
-                                                    #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
-                                          
-                                                ),
-                                                 mainPanel(
-                                                          plotOutput(("bar_plot"), width = "50%"),
-                                                          leafletOutput("mymap"),)  #mainpanel
-                                                 )
-                                               )
-                                      
-                                           )
-                                      )
-
-        
-
-
-
-
+                             tabPanel("MNPS Map", 
+                                      sidebarPanel(
+                                        selectInput("School_Level", "Select School level",
+                                                    choices = unique (school_enrollment$SCHOOL_TYPE)),
+                                        uiOutput("School_Select"),
+                                        #selectInput("School", "Select School",
+                                        #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
+                                        
+                                      ),
+                                      mainPanel(
+                                        plotOutput(("bar_plot"), width = "50%"),
+                                        leafletOutput("mymap"),)  #mainpanel
+                             )
+                  )
+                  
+)
+)
