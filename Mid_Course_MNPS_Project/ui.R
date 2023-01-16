@@ -26,7 +26,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                     min = 2007, 
                                                     max = 2023,
                                                     value = c (2008, 2017),
-                                                    sep = ""
+                                                    sep = "" 
                                                     ), 
                                                   
                                         

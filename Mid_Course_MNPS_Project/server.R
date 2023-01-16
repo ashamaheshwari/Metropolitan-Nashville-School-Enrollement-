@@ -36,10 +36,10 @@ output$line_plot <- renderPlot ({
    
 
      school_enrollment %>%
-     group_by (YEARS_1, YEARS, SCHOOL_TYPE) %>%
+     group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
      filter(SCHOOL_TYPE %in% input$school_level) %>%
      #filter(YEARS_1 %in% input$Years) %>%
-     filter((YEARS_1 >= input$Years[1]) & (YEARS_1 < input$Years[2])) %>%
+     filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
