@@ -15,14 +15,19 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                   navbarPage("School Enrollment",
                              tabPanel("Enrollment",
                                       sidebarPanel(
+                                        
+                                        selectInput("Year", 
+                                                    label = h4 ("Select Enrollment Year"),
+                                                   choices = unique (school_enrollment$YEARS)),
+                                        
                                         checkboxGroupInput("school_level", 
-                                                           label = h3("Select School level"), 
+                                                           label = h4("Select School level"), 
                                                            choices = c(unique (school_enrollment$SCHOOL_TYPE)
                                                                        
                                                            )),
-                                       
+                                         
                                         sliderInput("Years", 
-                                                    "Select Range of Years:",
+                                                    label = h4 ("Select Range of Years"),
                                                     min = 2007, 
                                                     max = 2023,
                                                     value = c (2008, 2017),
@@ -34,9 +39,21 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                         #                    label = h3("Select Years"), 
                                         #                    choices = unique (school_enrollment$YEARS)), 
                                       ),#sidbarpanel
-                                      mainPanel(plotOutput("line_plot")),
-                             ),
-                             tabPanel("MNPS Map", 
+                                      
+                                      mainPanel(
+                                        fluidRow(column(8,
+                                                        plotOutput("pie_chart")),
+                                                 
+                                                 column(4,tableOutput("table")),
+                                                 
+                                                 column(12, plotOutput("line_plot"))     
+                                                        )
+                                        )
+                                        # plotOutput(("pie_chart"),width = "50%"),
+                                        # tableOutput("table"), 
+                                        # plotOutput("line_plot"),),
+                             ), 
+                             tabPanel("tab", 
                                       sidebarPanel(
                                         selectInput("School_Level", "Select School level",
                                                     choices = unique (school_enrollment$SCHOOL_TYPE)),
@@ -46,10 +63,13 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                         
                                       ),
                                       mainPanel(
-                                        plotOutput(("bar_plot"), width = "50%"),
-                                        leafletOutput("mymap"),)  #mainpanel
-                             )
+                                        plotOutput(("bar_plot"), width = "75%"),
+                                        )  #mainpanel
+                             ),
+                             tabPanel("MNPS District Map",
+                                      mainPanel(
+                                        leafletOutput(("mymap"),width = "150%", height = "500px")) #mainpanel)
                   )
                   
-)
+))
 )

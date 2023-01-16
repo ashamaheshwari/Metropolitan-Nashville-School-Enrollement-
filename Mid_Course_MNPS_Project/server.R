@@ -31,7 +31,40 @@ shinyServer(function(input, output, session) {
 #  })
 
 #output$range <-renderPrint({input$Years})
+
+output$pie_chart <- renderPlot({
   
+  school_enrollment %>%
+    group_by (YEARS, SCHOOL_TYPE) %>%
+    filter (YEARS == input$Year) %>%
+    filter(SCHOOL_TYPE %in% input$school_level) %>%
+    summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
+    ungroup() %>%
+    ggplot(aes(x = "",  y= enrollment, fill = SCHOOL_TYPE))+
+    geom_col(stat = "identity", width= 1)+
+    coord_polar("y", start=0)+
+    theme_void()+
+    labs(fill='School level') +
+    scale_fill_brewer(palette="Reds")+
+    ggtitle(" Total Student Enrollment")+
+    theme(plot.title = element_text(hjust = 0.5))
+  
+})  
+  
+output$table <- renderTable({
+  
+  school_enrollment %>%
+    select(SCHOOL_TYPE, YEARS, TOTAL_ENROLLMENT) %>%
+    group_by (YEARS, SCHOOL_TYPE) %>%
+    filter (YEARS == input$Year) %>%
+    filter(SCHOOL_TYPE %in% input$school_level) %>%
+    transmute (Total_Enrollment = sum(TOTAL_ENROLLMENT)) %>%
+    unique() %>% rename(Year = YEARS, School_level = SCHOOL_TYPE)%>%
+    ungroup() %>%
+    select(School_level, Total_Enrollment)
+  
+}, digits = 0)
+
 output$line_plot <- renderPlot ({ 
    
 

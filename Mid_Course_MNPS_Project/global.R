@@ -6,6 +6,7 @@ library(shinydashboard)
 library(tidyverse)
 library(leaflet)
 library(sf)
+library(shinyWidgets)
 
 school_enrollment <-read_csv('Data/school_enrollment.csv')
 
