@@ -47,7 +47,7 @@ output$pie_chart <- renderPlot({
     labs(fill='School level') +
     scale_fill_brewer(palette="Reds")+
     ggtitle(" Total Student Enrollment")+
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(size = 16, hjust = 0.5))
   
 })  # Page 1
   
@@ -62,7 +62,7 @@ output$table <- renderTable({
     unique() %>% 
     rename(Year = YEARS, School_level = SCHOOL_TYPE)%>%
     ungroup() %>% 
-    select(School_level, Enrollment)
+    select(School_level, Enrollment) 
   
 }, digits = 0) # Page 1
 
@@ -79,10 +79,11 @@ output$line_plot <- renderPlot ({
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
      geom_line()+
      geom_point()+
-     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-           plot.title = element_text(hjust = 0.5),
-           legend.position="right", 
-           axis.title.y = element_text(size=12, vjust = 3),
+     labs(x = "", y = "Total Enrollment", col = "School Level") +
+     theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 1, hjust=1),
+           plot.title = element_text(size = 16, hjust = 0.5),
+           legend.position ="right", 
+           axis.title.y = element_text(size = 12, vjust = 3),
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
          
@@ -94,10 +95,11 @@ output$bar_plot <- renderPlot ({
     filter(SCHOOL_NAME == input$School) %>%
     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT, fill = YEARS))+
     geom_col(stat="identity")+
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-          plot.title = element_text(hjust = 0.5),
-          legend.position="right", 
-          axis.title.y = element_text(size=12, vjust = 3),
+    labs(x = "", y= "Total Enrollment")+
+    theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 1, hjust=1),
+          plot.title = element_text(hjust = 0.5, size = 16),
+          legend.position = "NULL",
+          axis.title.y = element_text(size = 12, vjust = 3),
           axis.text.y  = element_text(size = 10))+
     ggtitle("Enrollment trends over the years")
   
@@ -124,42 +126,67 @@ output$bar_plot1 <- renderPlot({
     summarise(Total_Student = sum(White) + sum(`Hispanic/Latino`) + sum(`Black or African American`) + sum(Asian) + sum(`American Indian or Alaska Native`+ sum(`Native Hawaiian or Other Pacific Islander`))) %>%
     ggplot(aes(x = Gender, y = Total_Student, fill = Gender ))+
     geom_col(width = 0.5)+
-    scale_fill_brewer(palette="Reds")+
+    scale_fill_manual(values = c("coral1", "turquoise3"))+
     ggtitle(" Student Enrollment")+
     labs(x= "", y = "Total Students") +
-    theme(plot.title = element_text(hjust = 0.5),
+    theme(plot.title = element_text(size = 16, hjust = 0.5),
           legend.position="none",
-          axis.text.x  = element_text(size = 10))
+          axis.text.x  = element_text(size = 12),
+          axis.title.y = element_text(size = 12, vjust = 3),
+          axis.text.y  = element_text(size = 10)) 
+})# Page 2
+
+output$bar_plot2 <- renderPlot({
+  
+  school_dem <- school_demographics %>%
+    filter(Year == input$YEAR) %>%
+    filter(School_Name == input$School ) %>%
+    group_by(Gender) %>%
+    summarise(WHITE = sum(White), `HISPANIC/LATINO`= sum(`Hispanic/Latino`), `BLACK OR AFRICAN AMERICAN` =sum(`Black or African American`), ASIAN = sum(Asian), `AMERICAN INDIAN OR ALASKA NATIVE`= sum(`American Indian or Alaska Native`, `NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER`= sum(`Native Hawaiian or Other Pacific Islander`))) 
+  
+  school_dem %>%
+    pivot_longer(cols=-Gender) %>%
+    ggplot(aes(x= reorder(name, - value) , y = value, fill = Gender))+
+    geom_col(width = 0.5) +
+    ggtitle(" Student Demographics")+
+    labs(x = "", y = "Total Students") +
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1, size = 8),
+          plot.title = element_text(hjust = 0.5, size = 16),
+          legend.position="right",
+          axis.title.y = element_text(size = 12, vjust = 3),
+          axis.text.y  = element_text(size = 10)
+          )
+ 
 })
 
 output$mymap <- renderLeaflet({
   
-  pal <- colorFactor(palette = 'Reds', domain = NULL)
+  pal <- colorFactor(palette = 'Paired', domain = NULL)
+  pal2 <- colorBin("Set1", domain = NULL)
   
-  # leaflet(df) %>% addTiles() %>%
-  #   addCircleMarkers(
-  #     radius = ~ifelse(type == "ship", 6, 10),
-  #     color = ~pal(type),
-  #     stroke = FALSE, fillOpacity = 0.5
-  #   )
-   
+  
    leaflet(options = leafletOptions(minZoom = 10)) %>%
      addProviderTiles(provider = "CartoDB.Positron") %>%
-     setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
-     setMaxBounds(lng1 = -86.7816 + 1, 
-                  lat1 = 36.1627 + 1, 
-                  lng2 = -86.7816 - 1, 
-                  lat2 = 36.1627 - 1) %>%
+     setView(lng = -86.6715, lat = 36.1700, zoom = 10) %>%
+     setMaxBounds(lng1 = -86.7819 + 1, 
+                  lat1 = 36.1766 + 1, 
+                  lng2 = -86.7819 - 1, 
+                  lat2 = 36.1766 - 1) %>%
      addPolygons(data = MNPS,
+                 fillColor = ~pal2(DISTRICT),
+                 color = "black",
                  weight = 2,
-                 fillOpacity = 0.0) %>%
+                 fillOpacity = 0.2) %>%
      addCircleMarkers(data = school_enrollment_sf,
-                      radius = 3,
+                      radius = 4,
                       color = ~pal(SCHOOL_TYPE),
-                      weight = 0.25,
+                      weight = 0.2,
                       fillColor = ~pal(SCHOOL_TYPE),
-                      fillOpacity = 0.75,
-                      label = ~popup)
+                      fillOpacity = 0.9,
+                      label = ~popup) %>%
+     addLegend(pal = pal, values = factor(school_enrollment_sf$SCHOOL_TYPE), opacity = 1.0, title = 'School Level',
+               position = "bottomright")
+   
  })#Page 3
  
  

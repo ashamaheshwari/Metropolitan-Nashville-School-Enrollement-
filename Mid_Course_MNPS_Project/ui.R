@@ -12,7 +12,7 @@ library(shiny)
 
 
 shinyUI(fluidPage(theme = shinytheme("united"),
-                  navbarPage("School Enrollment",
+                  navbarPage("Metropolitan Nashville Public School",
                              tabPanel("Enrollment",
                                       sidebarPanel(
                                         
@@ -53,7 +53,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                         # tableOutput("table"), 
                                         # plotOutput("line_plot"),),
                              ), 
-                             tabPanel("tab", 
+                             tabPanel("Demographics", 
                                       sidebarPanel(
                                         selectInput("School_Level", 
                                                     label= h4 ("Select School level"),
@@ -70,15 +70,26 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                       ),
                                       
                                       mainPanel(
-                                        fluidRow(column(8,
+                                        fluidRow(column(10,
                                                   plotOutput(("bar_plot"), width = "75%")),
-                                                  column(4, plotOutput("bar_plot1"))
+                                                  
+                                        
+                                                  column(4, 
+                                                         plotOutput("bar_plot1")),
+                                                br(),
+                                                br(), 
+                                                  column(7,
+                                                         plotOutput(("bar_plot2"), height = "400px")
+                                                 
+                                                  
                                         )
-                                        )  #mainpanel
+                                        )  #mainpanel page 2
+                             )
                              ),
-                             tabPanel("MNPS District Map",
-                                      mainPanel(
-                                        leafletOutput(("mymap"),width = "150%", height = "500px")) #mainpanel)
+                             tabPanel("School District Map",
+                                
+                                       mainPanel(
+                                        leafletOutput(("mymap"),width = "100%", height = "500px")) #mainpanel)
                   )
                   
 ))
