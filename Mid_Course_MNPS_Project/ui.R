@@ -55,15 +55,25 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                              ), 
                              tabPanel("tab", 
                                       sidebarPanel(
-                                        selectInput("School_Level", "Select School level",
+                                        selectInput("School_Level", 
+                                                    label= h4 ("Select School level"),
                                                     choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         uiOutput("School_Select"),
                                         #selectInput("School", "Select School",
                                         #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
-                                        
+                                        selectInput("YEAR", 
+                                                    label = h4 ("Select Enrollment Year"),
+                                                    choices = school_demographics %>%
+                                                      pull(Year) %>%
+                                                      unique() %>%
+                                                      sort()),
                                       ),
+                                      
                                       mainPanel(
-                                        plotOutput(("bar_plot"), width = "75%"),
+                                        fluidRow(column(8,
+                                                  plotOutput(("bar_plot"), width = "75%")),
+                                                  column(4, plotOutput("bar_plot1"))
+                                        )
                                         )  #mainpanel
                              ),
                              tabPanel("MNPS District Map",

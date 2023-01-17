@@ -49,7 +49,7 @@ output$pie_chart <- renderPlot({
     ggtitle(" Total Student Enrollment")+
     theme(plot.title = element_text(hjust = 0.5))
   
-})  
+})  # Page 1
   
 output$table <- renderTable({
   
@@ -58,12 +58,13 @@ output$table <- renderTable({
     group_by (YEARS, SCHOOL_TYPE) %>%
     filter (YEARS == input$Year) %>%
     filter(SCHOOL_TYPE %in% input$school_level) %>%
-    transmute (Total_Enrollment = sum(TOTAL_ENROLLMENT)) %>%
-    unique() %>% rename(Year = YEARS, School_level = SCHOOL_TYPE)%>%
-    ungroup() %>%
-    select(School_level, Total_Enrollment)
+    transmute (Enrollment = sum(TOTAL_ENROLLMENT)) %>%
+    unique() %>% 
+    rename(Year = YEARS, School_level = SCHOOL_TYPE)%>%
+    ungroup() %>% 
+    select(School_level, Enrollment)
   
-}, digits = 0)
+}, digits = 0) # Page 1
 
 output$line_plot <- renderPlot ({ 
    
@@ -85,12 +86,63 @@ output$line_plot <- renderPlot ({
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
          
-     })
+     }) #Page 1
        
+output$bar_plot <- renderPlot ({ 
+  school_enrollment %>%
+    filter(SCHOOL_TYPE == input$School_Level) %>%
+    filter(SCHOOL_NAME == input$School) %>%
+    ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT, fill = YEARS))+
+    geom_col(stat="identity")+
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+          plot.title = element_text(hjust = 0.5),
+          legend.position="right", 
+          axis.title.y = element_text(size=12, vjust = 3),
+          axis.text.y  = element_text(size = 10))+
+    ggtitle("Enrollment trends over the years")
+  
+}) #Page 2
+
+output$School_Select <- renderUI({
+  choices <- school_enrollment %>%
+    filter(SCHOOL_TYPE == input$School_Level) %>% 
+    pull(SCHOOL_NAME) %>%
+    unique() %>%
+    sort()
+  
+  selectInput("School", 
+              label = h4 ("Select School"),
+              choices = choices)
+}) #Page 2
  
- output$mymap <- renderLeaflet({
+output$bar_plot1 <- renderPlot({
+ 
+   school_demographics %>%
+    filter(Year == input$YEAR) %>%
+    filter(School_Name == input$School) %>%
+    group_by(Gender) %>%
+    summarise(Total_Student = sum(White) + sum(`Hispanic/Latino`) + sum(`Black or African American`) + sum(Asian) + sum(`American Indian or Alaska Native`+ sum(`Native Hawaiian or Other Pacific Islander`))) %>%
+    ggplot(aes(x = Gender, y = Total_Student, fill = Gender ))+
+    geom_col(width = 0.5)+
+    scale_fill_brewer(palette="Reds")+
+    ggtitle(" Student Enrollment")+
+    labs(x= "", y = "Total Students") +
+    theme(plot.title = element_text(hjust = 0.5),
+          legend.position="none",
+          axis.text.x  = element_text(size = 10))
+})
+
+output$mymap <- renderLeaflet({
+  
+  pal <- colorFactor(palette = 'Reds', domain = NULL)
+  
+  # leaflet(df) %>% addTiles() %>%
+  #   addCircleMarkers(
+  #     radius = ~ifelse(type == "ship", 6, 10),
+  #     color = ~pal(type),
+  #     stroke = FALSE, fillOpacity = 0.5
+  #   )
    
-    
    leaflet(options = leafletOptions(minZoom = 10)) %>%
      addProviderTiles(provider = "CartoDB.Positron") %>%
      setView(lng = -86.7816, lat = 36.1627, zoom = 12) %>%
@@ -103,37 +155,13 @@ output$line_plot <- renderPlot ({
                  fillOpacity = 0.0) %>%
      addCircleMarkers(data = school_enrollment_sf,
                       radius = 3,
-                      color = "white",
+                      color = ~pal(SCHOOL_TYPE),
                       weight = 0.25,
-                      fillColor = "red",
+                      fillColor = ~pal(SCHOOL_TYPE),
                       fillOpacity = 0.75,
                       label = ~popup)
- })
+ })#Page 3
  
- output$bar_plot <- renderPlot ({ 
-   school_enrollment %>%
-     filter(SCHOOL_TYPE == input$School_Level) %>%
-     filter(SCHOOL_NAME == input$School) %>%
-     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT, fill = YEARS))+
-     geom_col(stat="identity")+
-     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-           plot.title = element_text(hjust = 0.5),
-           legend.position="right", 
-           axis.title.y = element_text(size=12, vjust = 3),
-           axis.text.y  = element_text(size = 10))+
-     ggtitle("Enrollment trends over the years")
-   
- })
  
-output$School_Select <- renderUI({
-   choices <- school_enrollment %>%
-             filter(SCHOOL_TYPE == input$School_Level) %>% 
-             pull(SCHOOL_NAME) %>%
-             unique() %>%
-             sort()
-   
-  selectInput("School", "Select School",
-               choices = choices)
-})
   
 })

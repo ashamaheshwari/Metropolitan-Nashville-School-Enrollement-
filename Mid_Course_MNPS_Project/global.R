@@ -10,6 +10,8 @@ library(shinyWidgets)
 
 school_enrollment <-read_csv('Data/school_enrollment.csv')
 
+school_demographics <-read_csv('Data/school_demographics.csv')
+
 school_enrollment$LONGITUDE[(is.na(school_enrollment$LONGITUDE))] <-
   -86.74527
 
@@ -24,6 +26,7 @@ st_transform('+proj=longlat +datum=WGS84')
 school_enrollment_sf$popup <- 
   paste0("<b>School Name:</b> ", school_enrollment_sf$SCHOOL_NAME, "<br>",
          "<b>School Type:</b> ", school_enrollment_sf$SCHOOL_TYPE, "<br>",
+         "<b>Grades:</b> ", school_enrollment_sf$GRADES, "<br>",
          "<b>District:</b> ", school_enrollment_sf$SCHBRD_DIST, "<br>" , 
          "<b>Cluster:</b> ", school_enrollment_sf$CLUSTER_NAME, "<br>",
          "<b>Street Address:</b> ", school_enrollment_sf$ADDRESS, "<br>",
