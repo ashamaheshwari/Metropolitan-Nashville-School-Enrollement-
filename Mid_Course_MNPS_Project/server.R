@@ -49,13 +49,12 @@ output$table <- renderTable({
   
 }, digits = 0) # Page 1
 
-# line plot for comparing enrollmnet trend for different school levels over the years
+# line plot for comparing enrollment trend for different school levels over the years
 output$line_plot <- renderPlot ({ 
    
      school_enrollment %>%
      group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
      filter(SCHOOL_TYPE %in% input$school_level) %>%
-     #filter(YEARS_1 %in% input$Years) %>%
      filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
@@ -74,17 +73,18 @@ output$line_plot <- renderPlot ({
 
 # table to show percentage change in enrollment at different school levels over the years
 
-  output$table1 <- renderTable({
+output$table1 <- renderTable({
     
   school_enrollment %>%
         group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
-       filter (SCHOOL_TYPE == input$school_level) %>%
+       filter (SCHOOL_TYPE %in% input$school_level) %>%
        filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
        summarise(Enrollment = sum(TOTAL_ENROLLMENT)) %>%
-     ungroup() %>%
-     mutate(Percentage_Change = (Enrollment/lag(Enrollment)-1)*100) %>%
-     rename(Years = YEARS, School_level = SCHOOL_TYPE) %>%
-     select(School_level, Years, Percentage_Change) %>%
+       rename(Years = YEARS, School_level = SCHOOL_TYPE) %>%
+       ungroup() %>%
+       group_by(School_level) %>%
+       mutate(Percentage_Change = (Enrollment/lag(Enrollment)-1)*100) %>%
+      select(School_level, Years, Percentage_Change) %>%
       pivot_wider(names_from = Years, values_from = Percentage_Change) 
   
   }) # Page 1 End
