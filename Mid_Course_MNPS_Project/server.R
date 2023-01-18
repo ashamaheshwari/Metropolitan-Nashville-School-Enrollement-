@@ -12,26 +12,7 @@
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
   
-#  #  selected_years <-  reactive({
-#  #  #req(input$YEARS)
-#  # #validate(need(!is.na(input$YEARS[1]) & !is.na(input$YEARS[2]), "Error: Please provide both a start and an end enrollemnt year."))
-#  #  #validate(need(input$YEARS[1] < input$YEARS[2], "Error: Start year should be earlier than end year."))
-#  #  school_enrollment %>%
-#  #   filter(
-#  #  SCHOOL_TYPE== input$SCHOOL_TYPE)
-#  #  # YEARS > as.POSIXct(input$YEARS[1]) & YEARS < as.POSIXct(input$YEARS[2]
-#  #   ))
-#  #  })
-# 
-    
-# enrollment_filtered <- reactive ({
-#     E <- school_enrollment %>% group_by (YEARS, SCHOOL_TYPE) %>%
-#      filter(SCHOOL_TYPE == input$Years)
-#    return(E)
-#  })
-
-#output$range <-renderPrint({input$Years})
-
+## pie chart for total enrollment
 output$pie_chart <- renderPlot({
   
   school_enrollment %>%
@@ -50,8 +31,10 @@ output$pie_chart <- renderPlot({
     theme(plot.title = element_text(size = 16, hjust = 0.5))
   
 })  # Page 1
-  
+
+# table for data shown in piechart
 output$table <- renderTable({
+  
   
   school_enrollment %>%
     select(SCHOOL_TYPE, YEARS, TOTAL_ENROLLMENT) %>%
@@ -66,9 +49,9 @@ output$table <- renderTable({
   
 }, digits = 0) # Page 1
 
+# line plot for comparing enrollmnet trend for different school levels over the years
 output$line_plot <- renderPlot ({ 
    
-
      school_enrollment %>%
      group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
      filter(SCHOOL_TYPE %in% input$school_level) %>%
@@ -88,7 +71,28 @@ output$line_plot <- renderPlot ({
      ggtitle("Enrollment trends over the years")
          
      }) #Page 1
-       
+
+# table to show percentage change in enrollment at different school levels over the years
+
+  output$table1 <- renderTable({
+    
+  school_enrollment %>%
+        group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
+       filter (SCHOOL_TYPE == input$school_level) %>%
+       filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
+       summarise(Enrollment = sum(TOTAL_ENROLLMENT)) %>%
+     ungroup() %>%
+     mutate(Percentage_Change = (Enrollment/lag(Enrollment)-1)*100) %>%
+     rename(Years = YEARS, School_level = SCHOOL_TYPE) %>%
+     select(School_level, Years, Percentage_Change) %>%
+      pivot_wider(names_from = Years, values_from = Percentage_Change) 
+  
+  }) # Page 1 End
+ 
+  
+# Page 2 
+# plot for enrollment trend for individual schools
+  
 output$bar_plot <- renderPlot ({ 
   school_enrollment %>%
     filter(SCHOOL_TYPE == input$School_Level) %>%
@@ -105,6 +109,7 @@ output$bar_plot <- renderPlot ({
   
 }) #Page 2
 
+# to update the choices of schools based on school level selected
 output$School_Select <- renderUI({
   choices <- school_enrollment %>%
     filter(SCHOOL_TYPE == input$School_Level) %>% 
@@ -117,6 +122,8 @@ output$School_Select <- renderUI({
               choices = choices)
 }) #Page 2
  
+# plot for distribution of gender in each school
+
 output$bar_plot1 <- renderPlot({
  
    school_demographics %>%
@@ -135,6 +142,8 @@ output$bar_plot1 <- renderPlot({
           axis.title.y = element_text(size = 12, vjust = 3),
           axis.text.y  = element_text(size = 10)) 
 })# Page 2
+
+# plot for school demographics
 
 output$bar_plot2 <- renderPlot({
   
@@ -157,12 +166,14 @@ output$bar_plot2 <- renderPlot({
           axis.text.y  = element_text(size = 10)
           )
  
-})
+}) # Page 2 finish
+
+# Page 3 Map for school districs 
 
 output$mymap <- renderLeaflet({
   
   pal <- colorFactor(palette = 'Paired', domain = NULL)
-  pal2 <- colorBin("Set1", domain = NULL)
+  pal2 <- colorBin("Spectral", domain = NULL)
   
   
    leaflet(options = leafletOptions(minZoom = 10)) %>%
@@ -176,7 +187,7 @@ output$mymap <- renderLeaflet({
                  fillColor = ~pal2(DISTRICT),
                  color = "black",
                  weight = 2,
-                 fillOpacity = 0.2) %>%
+                 fillOpacity = 0.3) %>%
      addCircleMarkers(data = school_enrollment_sf,
                       radius = 4,
                       color = ~pal(SCHOOL_TYPE),
@@ -189,6 +200,4 @@ output$mymap <- renderLeaflet({
    
  })#Page 3
  
- 
-  
 })

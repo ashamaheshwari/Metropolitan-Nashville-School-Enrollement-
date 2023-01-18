@@ -1,4 +1,4 @@
-
+library(reactable)
 library(htmltools)
 library(shiny)
 library(shinythemes)

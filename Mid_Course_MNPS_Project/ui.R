@@ -13,8 +13,8 @@ library(shiny)
 
 shinyUI(fluidPage(theme = shinytheme("united"),
                   navbarPage("Metropolitan Nashville Public School",
-                             tabPanel("Enrollment",
-                                      sidebarPanel(
+                             tabPanel("Total Enrollment",
+                                      sidebarPanel(width = 3, 
                                         
                                         selectInput("Year", 
                                                     label = h4 ("Select Enrollment Year"),
@@ -34,33 +34,32 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                     sep = "" 
                                                     ), 
                                                   
-                                        
-                                        # checkboxGroupInput("Years", 
-                                        #                    label = h3("Select Years"), 
-                                        #                    choices = unique (school_enrollment$YEARS)), 
-                                      ),#sidbarpanel
+                                      ),#sidbarpanel Page 1
                                       
                                       mainPanel(
                                         fluidRow(column(8,
-                                                        plotOutput("pie_chart")),
+                                                        plotOutput("pie_chart")), # pie chart for total enrollment
                                                  
-                                                 column(4,tableOutput("table")),
+                                                 column(4,
+                                                        tableOutput("table")), # table for data in piechart
                                                  
-                                                 column(12, plotOutput("line_plot"))     
+                                                 column(12,
+                                                        plotOutput("line_plot")), # plot to compare enrollment trends over years
+                                                 
+                                                  column(12, 
+                                                        tableOutput("table1")) # table for percentage change in enrollment
                                                         )
                                         )
-                                        # plotOutput(("pie_chart"),width = "50%"),
-                                        # tableOutput("table"), 
-                                        # plotOutput("line_plot"),),
-                             ), 
-                             tabPanel("Demographics", 
-                                      sidebarPanel(
+                                        
+                             ), # main panel Page 1
+                             
+                             tabPanel("School Enrollment and Demographics", 
+                                      sidebarPanel(width = 3, 
                                         selectInput("School_Level", 
                                                     label= h4 ("Select School level"),
                                                     choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         uiOutput("School_Select"),
-                                        #selectInput("School", "Select School",
-                                        #         choices = unique(school_enrollment_sf$SCHOOL_NAME))
+                                        
                                         selectInput("YEAR", 
                                                     label = h4 ("Select Enrollment Year"),
                                                     choices = school_demographics %>%
@@ -70,7 +69,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                       ),
                                       
                                       mainPanel(
-                                        fluidRow(column(10,
+                                        fluidRow(column(12,
                                                   plotOutput(("bar_plot"), width = "75%")),
                                                   
                                         
@@ -78,7 +77,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                          plotOutput("bar_plot1")),
                                                 br(),
                                                 br(), 
-                                                  column(7,
+                                                  column(8,
                                                          plotOutput(("bar_plot2"), height = "400px")
                                                  
                                                   
