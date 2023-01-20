@@ -12,28 +12,17 @@
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
-enrollment_type_filtered <-  reactive({
-  school_enrollment %>% 
-    select(SCHOOL_TYPE, TOTAL_ENROLLMENT, YEARS, START_YEAR) %>%
-    filter(SCHOOL_TYPE %in% input$school_type) 
-  
-}) 
-  
-enrollment_by_type <- reactive({
-  enrollment_type_filtered () %>% 
-    group_by (YEARS, SCHOOL_TYPE) %>%
-    filter (YEARS == input$Year) %>%
-    summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
-    ungroup()
-  
-  
-})
 
 ## pie chart for total enrollment
 output$pie_chart <- renderPlot({
   
-  enrollment_by_type () %>%
-    ggplot(aes(x = "",  y= enrollment, fill = SCHOOL_TYPE))+
+  enrollment_by_type_year %>%
+    filter(SCHOOL_TYPE %in% input$school_type) %>%
+    filter (YEARS == input$Year) %>%
+    group_by(SCHOOL_TYPE, YEARS) %>%
+    summarise(Enrollment = sum(TOTAL_ENROLLMENT)) %>%
+    ungroup() %>%
+    ggplot(aes(x = "",  y= Enrollment, fill = SCHOOL_TYPE))+
     geom_col(stat = "identity", width= 1)+
     coord_polar("y", start=0)+
     theme_void()+
@@ -47,25 +36,25 @@ output$pie_chart <- renderPlot({
 # table for data shown in piechart
 output$table <- renderTable({
   
-  enrollment_by_type() %>%
-  # school_enrollment %>%
-  #   select(SCHOOL_TYPE, YEARS, TOTAL_ENROLLMENT) %>%
-  #   group_by (YEARS, SCHOOL_TYPE) %>%
-  #   filter (YEARS == input$Year) %>%
-  #   filter(SCHOOL_TYPE %in% input$school_type) %>%
-  #   transmute (Enrollment = sum(TOTAL_ENROLLMENT)) %>%
-  #   unique() %>%
+  enrollment_by_type_year %>%
+    select(SCHOOL_TYPE, YEARS, TOTAL_ENROLLMENT) %>%
+    group_by (YEARS, SCHOOL_TYPE) %>%
+    filter (YEARS == input$Year) %>%
+    filter(SCHOOL_TYPE %in% input$school_type) %>% 
+    summarise (Enrollment = sum(TOTAL_ENROLLMENT)) %>%
+    unique() %>%
+    ungroup() %>%
     rename(Year = YEARS, `School Type` = SCHOOL_TYPE) %>%
-    select(`School Type`, enrollment) 
+    select(`School Type`, Enrollment) 
   
 }, digits = 0) # Page 1
 
 # line plot for comparing enrollment trend for different school levels over the years
 output$line_plot <- renderPlot ({ 
    
-     enrollment_type_filtered() %>%
+     enrollment_by_type_year %>%
      group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
-     #filter(SCHOOL_TYPE %in% input$school_type) %>%
+     filter(SCHOOL_TYPE %in% input$school_type) %>%
      filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
@@ -86,7 +75,7 @@ output$line_plot <- renderPlot ({
 
 output$table1 <- renderTable({
     
-  school_enrollment %>%
+  enrollment_by_type_year %>%
         group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
        filter (SCHOOL_TYPE %in% input$school_type) %>%
        filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%

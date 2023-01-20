@@ -7,6 +7,8 @@ library(tidyverse)
 library(leaflet)
 library(sf)
 
+enrollment_by_type_year <- read_csv('Data/enrollment_by_type_year.csv')
+
 school_enrollment <-read_csv('Data/school_enrollment.csv')
 
 school_demographics <-read_csv('Data/school_demographics.csv')
