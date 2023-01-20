@@ -20,8 +20,8 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                                     label = h4 ("Select Enrollment Year"),
                                                    choices = unique (school_enrollment$YEARS)),
                                         
-                                        checkboxGroupInput("school_level", 
-                                                           label = h4("Select School level"), 
+                                        checkboxGroupInput("school_type", 
+                                                           label = h4("Select School Type"), 
                                                            choices = c(unique (school_enrollment$SCHOOL_TYPE)
                                                                        
                                                            )),
@@ -55,8 +55,8 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                              
                              tabPanel("School Enrollment and Demographics", 
                                       sidebarPanel(width = 3, 
-                                        selectInput("School_Level", 
-                                                    label= h4 ("Select School level"),
+                                        selectInput("School_Type", 
+                                                    label= h4 ("Select School Type"),
                                                     choices = unique (school_enrollment$SCHOOL_TYPE)),
                                         uiOutput("School_Select"),
                                         

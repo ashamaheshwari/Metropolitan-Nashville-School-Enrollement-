@@ -18,14 +18,14 @@ output$pie_chart <- renderPlot({
   school_enrollment %>%
     group_by (YEARS, SCHOOL_TYPE) %>%
     filter (YEARS == input$Year) %>%
-    filter(SCHOOL_TYPE %in% input$school_level) %>%
+    filter(SCHOOL_TYPE %in% input$school_type) %>%
     summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
     ungroup() %>%
     ggplot(aes(x = "",  y= enrollment, fill = SCHOOL_TYPE))+
     geom_col(stat = "identity", width= 1)+
     coord_polar("y", start=0)+
     theme_void()+
-    labs(fill='School level') +
+    labs(fill='School Type') +
     scale_fill_brewer(palette="Reds")+
     ggtitle(" Total Student Enrollment")+
     theme(plot.title = element_text(size = 16, hjust = 0.5))
@@ -40,12 +40,12 @@ output$table <- renderTable({
     select(SCHOOL_TYPE, YEARS, TOTAL_ENROLLMENT) %>%
     group_by (YEARS, SCHOOL_TYPE) %>%
     filter (YEARS == input$Year) %>%
-    filter(SCHOOL_TYPE %in% input$school_level) %>%
+    filter(SCHOOL_TYPE %in% input$school_type) %>%
     transmute (Enrollment = sum(TOTAL_ENROLLMENT)) %>%
     unique() %>% 
-    rename(Year = YEARS, School_level = SCHOOL_TYPE)%>%
+    rename(Year = YEARS, `School Type` = SCHOOL_TYPE)%>%
     ungroup() %>% 
-    select(School_level, Enrollment) 
+    select(`School Type`, Enrollment) 
   
 }, digits = 0) # Page 1
 
@@ -54,18 +54,18 @@ output$line_plot <- renderPlot ({
    
      school_enrollment %>%
      group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
-     filter(SCHOOL_TYPE %in% input$school_level) %>%
+     filter(SCHOOL_TYPE %in% input$school_type) %>%
      filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
      summarise(enrollment = sum(TOTAL_ENROLLMENT)) %>%
      ungroup() %>%
      ggplot(aes(x = YEARS, y= enrollment, group = SCHOOL_TYPE, color = SCHOOL_TYPE))+
      geom_line()+
      geom_point()+
-     labs(x = "", y = "Total Enrollment", col = "School Level") +
+     labs(x = "", y = "Total Enrollment", col = "School Type") +
      theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 1, hjust=1),
            plot.title = element_text(size = 16, hjust = 0.5),
            legend.position ="right", 
-           axis.title.y = element_text(size = 12, vjust = 3),
+           axis.title.y = element_text(size = 14, vjust = 3),
            axis.text.y  = element_text(size = 10))+
      ggtitle("Enrollment trends over the years")
          
@@ -77,14 +77,14 @@ output$table1 <- renderTable({
     
   school_enrollment %>%
         group_by (START_YEAR, YEARS, SCHOOL_TYPE) %>%
-       filter (SCHOOL_TYPE %in% input$school_level) %>%
+       filter (SCHOOL_TYPE %in% input$school_type) %>%
        filter((START_YEAR >= input$Years[1]) & (START_YEAR < input$Years[2])) %>%
        summarise(Enrollment = sum(TOTAL_ENROLLMENT)) %>%
-       rename(Years = YEARS, School_level = SCHOOL_TYPE) %>%
+       rename(Years = YEARS, `School Type` = SCHOOL_TYPE) %>%
        ungroup() %>%
-       group_by(School_level) %>%
+       group_by(`School Type`) %>%
        mutate(Percentage_Change = (Enrollment/lag(Enrollment)-1)*100) %>%
-      select(School_level, Years, Percentage_Change) %>%
+      select(`School Type`, Years, Percentage_Change) %>%
       pivot_wider(names_from = Years, values_from = Percentage_Change) 
   
   }) # Page 1 End
@@ -95,7 +95,7 @@ output$table1 <- renderTable({
   
 output$bar_plot <- renderPlot ({ 
   school_enrollment %>%
-    filter(SCHOOL_TYPE == input$School_Level) %>%
+    filter(SCHOOL_TYPE == input$School_Type) %>%
     filter(SCHOOL_NAME == input$School) %>%
     ggplot(aes(x = YEARS, y= TOTAL_ENROLLMENT, fill = YEARS))+
     geom_col(stat="identity")+
@@ -103,7 +103,7 @@ output$bar_plot <- renderPlot ({
     theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 1, hjust=1),
           plot.title = element_text(hjust = 0.5, size = 16),
           legend.position = "NULL",
-          axis.title.y = element_text(size = 12, vjust = 3),
+          axis.title.y = element_text(size = 14, vjust = 3),
           axis.text.y  = element_text(size = 10))+
     ggtitle("Enrollment trends over the years")
   
@@ -112,7 +112,7 @@ output$bar_plot <- renderPlot ({
 # to update the choices of schools based on school level selected
 output$School_Select <- renderUI({
   choices <- school_enrollment %>%
-    filter(SCHOOL_TYPE == input$School_Level) %>% 
+    filter(SCHOOL_TYPE == input$School_Type) %>% 
     pull(SCHOOL_NAME) %>%
     unique() %>%
     sort()
@@ -139,7 +139,7 @@ output$bar_plot1 <- renderPlot({
     theme(plot.title = element_text(size = 16, hjust = 0.5),
           legend.position="none",
           axis.text.x  = element_text(size = 12),
-          axis.title.y = element_text(size = 12, vjust = 3),
+          axis.title.y = element_text(size = 14, vjust = 3),
           axis.text.y  = element_text(size = 10)) 
 })# Page 2
 
@@ -159,10 +159,10 @@ output$bar_plot2 <- renderPlot({
     geom_col(width = 0.5) +
     ggtitle(" Student Demographics")+
     labs(x = "", y = "Total Students") +
-    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1, size = 8),
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 9),
           plot.title = element_text(hjust = 0.5, size = 16),
           legend.position="right",
-          axis.title.y = element_text(size = 12, vjust = 3),
+          axis.title.y = element_text(size = 14, vjust = 3),
           axis.text.y  = element_text(size = 10)
           )
  
@@ -195,7 +195,7 @@ output$mymap <- renderLeaflet({
                       fillColor = ~pal(SCHOOL_TYPE),
                       fillOpacity = 0.9,
                       label = ~popup) %>%
-     addLegend(pal = pal, values = factor(school_enrollment_sf$SCHOOL_TYPE), opacity = 1.0, title = 'School Level',
+     addLegend(pal = pal, values = factor(school_enrollment_sf$SCHOOL_TYPE), opacity = 1.0, title = 'School Type',
                position = "bottomright")
    
  })#Page 3
