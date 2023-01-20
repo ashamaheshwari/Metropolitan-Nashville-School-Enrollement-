@@ -85,6 +85,7 @@ shinyUI(fluidPage(theme = shinytheme("united"),
                                         )  #mainpanel page 2
                              )
                              ),
+                             
                              tabPanel("School District Map",
                                 
                                        mainPanel(
