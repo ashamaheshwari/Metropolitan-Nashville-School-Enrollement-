@@ -1,15 +1,4 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
-
-
-# Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
 
@@ -33,6 +22,7 @@ output$pie_chart <- renderPlot({
   
 })  # Page 1
 
+
 # table for data shown in piechart
 output$table <- renderTable({
   
@@ -48,6 +38,7 @@ output$table <- renderTable({
     select(`School Type`, Enrollment) 
   
 }, digits = 0) # Page 1
+
 
 # line plot for comparing enrollment trend for different school levels over the years
 output$line_plot <- renderPlot ({ 
@@ -70,6 +61,7 @@ output$line_plot <- renderPlot ({
      ggtitle("Enrollment trends over the years")
          
      }) #Page 1
+
 
 # table to show percentage change in enrollment at different school levels over the years
 
@@ -109,6 +101,7 @@ output$bar_plot <- renderPlot ({
   
 }) #Page 2
 
+
 # to update the choices of schools based on school level selected
 output$School_Select <- renderUI({
   choices <- school_enrollment %>%
@@ -122,6 +115,7 @@ output$School_Select <- renderUI({
               choices = choices)
 }) #Page 2
  
+
 # plot for distribution of gender in each school
 
 output$bar_plot1 <- renderPlot({
@@ -142,6 +136,7 @@ output$bar_plot1 <- renderPlot({
           axis.title.y = element_text(size = 14, vjust = 3),
           axis.text.y  = element_text(size = 10)) 
 })# Page 2
+
 
 # plot for school demographics
 
@@ -168,6 +163,7 @@ output$bar_plot2 <- renderPlot({
  
 }) # Page 2 finish
 
+
 # Page 3 Map for school districs 
 
 output$mymap <- renderLeaflet({
@@ -183,7 +179,7 @@ output$mymap <- renderLeaflet({
                   lat1 = 36.1766 + 1, 
                   lng2 = -86.7819 - 1, 
                   lat2 = 36.1766 - 1) %>%
-     addPolygons(data = MNPS,
+     addPolygons(data = mnps,
                  fillColor = ~pal2(DISTRICT),
                  color = "black",
                  weight = 2,
